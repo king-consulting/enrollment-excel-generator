@@ -2,16 +2,29 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// this will load fedev for now
-// $config = \AgentPlatform\EnhancedAgentNotifications\Management\Config::get_instance();
+use Doctrine\ORM\Tools\Setup;
+use Doctrine\ORM\EntityManager;
+use KingConsulting\Excel\Generator;
+use KingConsulting\Service\RawDataService;
 
-// this will use a local sqlite db
-//$config = new \AgentPlatform\EnhancedAgentNotifications\Orm\Config\LocalSqlite();
+// Create a simple "default" Doctrine ORM configuration for Annotations
+$isDevMode = true;
+$config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."vendor/king-consulting/enrollment-orm/config/Entity"), $isDevMode);
 
-// $ormFactory = new \AgentPlatform\EnhancedAgentNotifications\Orm\Factory($config);
-// $entityManager = $ormFactory->getDoctrineEntityManager();
-// $readOnlyEntityManager = $ormFactory->getReadOnlyDoctrineEntityManager();
+// the connection configuration
+$conn = array(
+  'driver'   => 'pdo_mysql',
+  'user'     => 'root',
+  'password' => '&$#$JFl23asfjA)8wfLFr29&^',
+  'dbname'   => 'Enrollment',
+);
 
-// set up legacy db handle path; needed for writing to CRM
-// define('DB_HANDLE_INCLUDE_PATH', $config->getLegacyDbHandlePath());
+// obtaining the entity manager
+$entityManager = EntityManager::create($conn, $config);
 
+$RawDataService = new RawDataService($entityManager);
+
+// Create new PHPExcel object
+$PHPExcel = new PHPExcel();
+
+$ExcelGenerator = new Generator($PHPExcel, __DIR__ . '/output');
